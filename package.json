@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/IBwWG/cheatermind/issues"
   },
-  "homepage": "https://github.com/IBwWG/cheatermind#readme"
+  "homepage": "https://github.com/IBwWG/cheatermind#readme",
+  "dependencies": {
+    "mithril": "^1.0.1"
+  }
 }
