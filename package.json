@@ -1,0 +1,23 @@
+{
+  "name": "cheatermind",
+  "version": "1.0.0",
+  "description": "MasterMind clone where the computer delays choosing the code as long as possible, while still leaving all previously given data true.",
+  "main": "index.js",
+  "scripts": {
+    "test": "ospec"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/IBwWG/cheatermind.git"
+  },
+  "keywords": [
+    "game",
+    "ai"
+  ],
+  "author": "KJB",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/IBwWG/cheatermind/issues"
+  },
+  "homepage": "https://github.com/IBwWG/cheatermind#readme"
+}
