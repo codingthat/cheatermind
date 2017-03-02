@@ -1,0 +1,46 @@
+<h1>CheaterMind</h1>
+<h4>...with {{colourCount}} possible colours in each of {{slotCount}} slots...</h4>
+
+<div class='grid'>
+  {{#each guesses as guess, i}}
+    <div class='row'>
+      {{#each guess as slot}}
+        <Slot colourNumber='{{slot}}'/>
+      {{/each}}
+        &rarr;
+      {{ renderGrade(grades[i]) }}
+    </div>
+  {{/each}}
+  <div class='new row'>
+    {{#each nextGuess as slot}}
+      <Slot colourNumber='{{slot}}'/>
+    {{/each}}
+    &rarr;
+  </div>
+</div>
+
+<script>
+  import Slot from './Slot.html';
+
+  export default {
+    data () {
+      return {
+        colourCount: 6,
+        slotCount: 5,
+        guesses: [
+          [0, 1, 1, 3, 6],
+        ],
+        nextGuess: [0, 0, 0, 0, 0],
+        grades: [
+          [1, 2, 2],
+        ],
+      }
+    },
+    helpers: {
+      renderGrade: grade => grade, //new Array(grade[0] + 1).join('✓') + new Array(grade[1] + 1).join('~') + new Array(grade[2] + 1).join('✗'),
+    },
+    components: {
+      Slot
+    }
+  };
+</script>
