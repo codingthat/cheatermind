@@ -1,43 +1,58 @@
 <h1>CheaterMind</h1>
-<h4>...with {{colourCount}} possible colours in each of {{slotCount}} slots...</h4>
+<h4>...with <input bind:value='colourCount'/> possible colours in each of <input bind:value='slotCount'/> slots...</h4>
 
 <div class='grid'>
-  {{#each guesses as guess, i}}
+  {{#each guesses as guess}}
     <div class='row'>
-      {{#each guess as slot}}
+      {{#each guess[0] as slot}}
         <Slot colourNumber='{{slot}}'/>
       {{/each}}
-        &rarr;
-      {{ renderGrade(grades[i]) }}
+      {{#if guess.length > 1}}
+        &rarr; {{ renderGrade(guess[1]) }}
+      {{else}}
+        <button on:click='grade()'>&rarr;</button>
+      {{/if}}
     </div>
   {{/each}}
-  <div class='new row'>
-    {{#each nextGuess as slot}}
-      <Slot colourNumber='{{slot}}'/>
-    {{/each}}
-    &rarr;
-  </div>
 </div>
 
 <script>
   import Slot from './Slot.html';
+  import * as AI from '../js/AI';
 
   export default {
+    oncreate () {
+      const init = () => {
+        AI.init(this.get('slotCount'), this.get('colourCount'));
+        guesses = [];
+        guesses.push([new Array(this.get('slotCount')).fill(0)]);
+        this.set({guesses})
+      };
+      this.colourObserver = this.observe( 'colourCount', init, {init:false}); // avoid double init on startup
+      this.slotObserver = this.observe( 'slotCount', init);
+    },
+    ondestroy () {
+      this.colourObserver.cancel();
+      this.slotObserver.cancel();
+    },
     data () {
       return {
         colourCount: 6,
-        slotCount: 5,
-        guesses: [
-          [0, 1, 1, 3, 6],
-        ],
-        nextGuess: [0, 0, 0, 0, 0],
-        grades: [
-          [1, 2, 2],
-        ],
+        slotCount: 4,
+        dims: [6, 4],
+        guesses: [],
       }
     },
     helpers: {
-      renderGrade: grade => grade, //new Array(grade[0] + 1).join('✓') + new Array(grade[1] + 1).join('~') + new Array(grade[2] + 1).join('✗'),
+      renderGrade: grade => new Array(grade[0] + 1).join('✓') + new Array(grade[1] + 1).join('~') + new Array(grade[2] + 1).join('✗'),
+    },
+    methods: {
+      grade() {
+        let guesses = this.get('guesses');
+        let newGuess = guesses[guesses.length - 1][0];
+        guesses.splice(guesses.length - 1, 0, [newGuess, AI.guess(newGuess)]);
+        this.set({guesses});
+      }
     },
     components: {
       Slot
