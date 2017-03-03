@@ -1,16 +1,28 @@
 <h1>CheaterMind</h1>
 <h4>...with <input bind:value='colourCount'/> possible colours in each of <input bind:value='slotCount'/> slots...</h4>
+{{#if error !== ''}}
+<div class='error'>
+  {{error}}
+</div>
+{{/if}}
 
 <div class='grid'>
   {{#each guesses as guess}}
     <div class='row'>
-      {{#each guess[0] as slot}}
-        <Slot colourNumber='{{slot}}'/>
-      {{/each}}
       {{#if guess.length > 1}}
-        &rarr; {{ renderGrade(guess[1]) }}
+        {{#each guess[0] as slot}}
+          <Slot colourNumber='{{slot}}'/>
+        {{/each}}
+        &rarr;
+        {{ renderGrade(guess[1]) }}
       {{else}}
-        <button on:click='grade()'>&rarr;</button>
+        {{#each guess[0] as slot}}
+          <Slot colourNumber='{{slot}}'/>
+        {{/each}}
+        <button on:click='grade()'>&rarr;</button><br/>
+        {{#each guess[0] as slot, i}}
+          <PickerSlot on:select='updateGuess(i, event.colourNumber)' colourCount='{{colourCount}}'/>
+        {{/each}}
       {{/if}}
     </div>
   {{/each}}
@@ -18,15 +30,24 @@
 
 <script>
   import Slot from './Slot.html';
+  import PickerSlot from './PickerSlot.html';
   import * as AI from '../js/AI';
 
   export default {
     oncreate () {
       const init = () => {
-        AI.init(this.get('slotCount'), this.get('colourCount'));
+        const slotCount = this.get('slotCount') * 1;
+        const colourCount = this.get('colourCount') * 1;
+        if (slotCount === 0 || colourCount === 0) { return; }
+        try {
+          AI.init(slotCount, colourCount);
+        } catch (e) {
+          this.set({error: e});
+          return; // keep running, but don't reset
+        }
         guesses = [];
-        guesses.push([new Array(this.get('slotCount')).fill(0)]);
-        this.set({guesses})
+        guesses.push([new Array(slotCount).fill(0)]);
+        this.set({guesses, slotCount, colourCount, error: ''});
       };
       this.colourObserver = this.observe( 'colourCount', init, {init:false}); // avoid double init on startup
       this.slotObserver = this.observe( 'slotCount', init);
@@ -39,8 +60,8 @@
       return {
         colourCount: 6,
         slotCount: 4,
-        dims: [6, 4],
         guesses: [],
+        error: '',
       }
     },
     helpers: {
@@ -50,12 +71,24 @@
       grade() {
         let guesses = this.get('guesses');
         let newGuess = guesses[guesses.length - 1][0];
-        guesses.splice(guesses.length - 1, 0, [newGuess, AI.guess(newGuess)]);
+        guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), AI.guess(newGuess)]);
+        this.set({guesses});
+      },
+      updateGuess(slot, colourNumber) {
+        let guesses = this.get('guesses');
+        guesses[guesses.length - 1][0][slot] = colourNumber;
         this.set({guesses});
       }
     },
     components: {
-      Slot
+      Slot,
+      PickerSlot,
     }
   };
 </script>
+
+<style>
+  .error {
+    border: 2px dotted red;
+  }
+</style>

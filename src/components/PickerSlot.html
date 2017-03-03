@@ -1,0 +1,52 @@
+<div class='picker'>
+    {{#each colour as colourNumber}}
+        <button on:click='fire("select", {colourNumber})'><Slot colourNumber='{{colourNumber}}' /></button>
+    {{/each}}
+</div>
+
+<script>
+  import Slot from './Slot.html';
+
+  export default {
+    oncreate () {
+      this.colourObserver = this.observe( 'colourCount', count => {
+        let colour = [];
+        for (let i=0; i<count; i++) {
+            colour.push(i);
+        }
+        this.set({colour});
+      });
+    },
+    ondestroy () {
+      this.colourObserver.cancel();
+    },
+    data () {
+      return {
+        colourCount: 6,
+        colour: [],
+      }
+    },
+    components: {
+      Slot,
+    }
+  };
+</script>
+
+<style>
+    .picker {
+        width: 22px;
+        margin: 0px auto;
+        display: inline-block;
+    }
+    .picker button {
+        border: 0;
+        padding: 0;
+        background: none;
+    }
+    .circle:hover {
+        box-shadow:0 0 4px #222 inset;
+    }
+    .selected {
+        border: 1px solid black;
+    }
+</style>

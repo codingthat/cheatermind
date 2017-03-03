@@ -7,8 +7,7 @@ const init = (slots, colours) => {
     if (colours <= 0) { throw new Error("Must have positive colours"); }
 
     const possibilities = Math.pow(colours, slots);
-
-    if (possibilities > 2000000000) { throw new Error("Might have too many possibilities for this engine"); }
+    if (possibilities > 11000000) { throw new Error("Might have too many possibilities for this engine"); }
 
     slotCount = slots;
     colourCount = colours;
