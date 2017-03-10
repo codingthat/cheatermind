@@ -8,12 +8,16 @@ For a simplest example, pretend you're playing with one slot and two colours.  T
 
 The question is, how well can you do, given that you're cursed with such bad luck?  What's the minimum worst case scenario?
 
+## playing
+
+```sh
+npm build
+```
+
+Then launch public/index.html in your browser.  The clickable dots set your current guess, and the arrow makes your current guess official, and grades it for you.
+
 ## tests
 
 ```sh
 npm test
 ```
-
-## todo
-
-There's no UI yet, just the underlying AI functions.  To "play" you have to write some JavaScript.
