@@ -2,7 +2,7 @@
 
 var o = require("../node_modules/mithril/ospec")
 
-var a = require("../src/AI")
+var a = require("../src/js/AI")
 
 a.init(4, 6)
 

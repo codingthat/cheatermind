@@ -1,5 +1,3 @@
-//var m = require("mithril")
-
 var possibleCodes = [];
 var slotCount = 4;
 var colourCount = 6;
@@ -9,8 +7,7 @@ const init = (slots, colours) => {
     if (colours <= 0) { throw new Error("Must have positive colours"); }
 
     const possibilities = Math.pow(colours, slots);
-
-    if (possibilities > 2000000000) { throw new Error("Might have too many possibilities for this engine"); }
+    if (possibilities > 11000000) { throw new Error("Might have too many possibilities for this engine"); }
 
     slotCount = slots;
     colourCount = colours;
@@ -33,7 +30,7 @@ const init = (slots, colours) => {
     }
 }
 const diff = (guess, code) => {
-    if (guess.length !== slotCount) { throw new Error("Guess and code must be the same length, but weren't: ", guess.length, slotCount); }
+    if (guess.length !== slotCount) { throw new Error(`Guess and code must be the same length, but weren't: ${guess.length}, ${slotCount}`); }
 
     let exactCount = 0,
         inexactCount = 0,
@@ -89,4 +86,7 @@ const guess = (guess) => {
     return gradeBuckets[chosenTie][0].split(',').map(i => i*1);
 }
 
-module.exports = { init, diff, guess };
+// module.exports works for ospec, but makes rollup produce an invalid bundle (client-side error)
+//module.exports = { init, diff, guess };
+// export makes a valid bundle, but chokes ospec
+export { init, diff, guess };

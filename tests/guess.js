@@ -2,7 +2,7 @@
 
 var o = require("../node_modules/mithril/ospec")
 
-var a = require("../src/AI")
+var a = require("../src/js/AI")
 
 o.spec("guess", function() { // WARNING: guess mutates AI.possibleCodes (for efficiency) so an .init() call is needed to reset it
     o("example 1", function() {
