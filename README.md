@@ -10,9 +10,15 @@ For a simplest example, pretend you're playing with one slot and two colours.  T
 
 Surely better than what you get with the auto-guess feature... :-)
 
-## playing
+## playing online
 
-First, if you do not have yarn installed:
+You can play a live demo at https://ibwwg.itch.io/cheatermind .
+
+## playing locally
+
+It's assumed you have Node, npm, and git installed.
+
+You also need yarn installed globally.  If you do not have it:
 
 ```sh
 npm install --global yarn
