@@ -7,7 +7,7 @@ const init = (slots, colours) => {
   if (colours <= 0) { throw new Error('Must have positive colours'); }
 
   const possibilities = Math.pow(colours, slots); // eslint-disable-line no-restricted-properties
-  if (possibilities > 11000000) {
+  if (possibilities > 9000000) {
     throw new Error('Might have too many possibilities for this engine');
   }
 
@@ -96,7 +96,4 @@ const guess = (newGuess) => {
   return gradeBuckets[chosenTie][0].split(',').map(i => i * 1);
 };
 
-// module.exports works for ospec, but makes rollup produce an invalid bundle (client-side error)
-module.exports = { init, diff, guess };
-// export makes a valid bundle, but chokes ospec
-// export { init, diff, guess };
+module.exports = { init, diff, guess }; // for ospec compatibility

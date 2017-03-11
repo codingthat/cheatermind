@@ -1,9 +1,11 @@
 <h1>CheaterMind</h1>
-<h4>...with <input bind:value='colourCount'/> possible colours in each of <input bind:value='slotCount'/> slots...</h4>
+{{#if guesses.length === 1}}
+  <h4>...with <input type='number' min='2' max='16' bind:value='colourCount'/> possible colours in each of <input type='number' min='1' max='23' bind:value='slotCount'/> slots...</h4>
+{{/if}}
 {{#if error !== ''}}
-<div class='error'>
-  {{error}}
-</div>
+  <div class='error'>
+    {{error}}
+  </div>
 {{/if}}
 
 <div class='grid'>
@@ -16,10 +18,11 @@
         &rarr;
         {{ renderGrade(guess[1]) }}
       {{else}}
+        <hr/>
         {{#each guess[0] as slot}}
-          <Slot colourNumber='{{slot}}'/>
+          <Slot next='next' colourNumber='{{slot}}'/>
         {{/each}}
-        <button on:click='grade()'>&rarr;</button><br/>
+        <button class='grade' on:click='grade()'>&rarr;</button><br/>
         {{#each guess[0] as slot, i}}
           <PickerSlot on:select='updateGuess(i, event.colourNumber)' colourCount='{{colourCount}}'/>
         {{/each}}
@@ -90,5 +93,9 @@
 <style>
   .error {
     border: 2px dotted red;
+  }
+  .grade {
+    width: 40px;
+    height: 40px;
   }
 </style>
