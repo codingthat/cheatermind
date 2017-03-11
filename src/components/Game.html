@@ -1,11 +1,14 @@
-<h1>CheaterMind</h1>
+<h2>CheaterMind</h2>
+<h3>(MasterMind <a href="https://github.com/IBwWG/cheatermind">with terrible luck</a>)</h3>
 {{#if guesses.length === 1}}
   <h4>...with <input type='number' min='2' max='16' bind:value='colourCount'/> possible colours in each of <input type='number' min='1' max='23' bind:value='slotCount'/> slots...</h4>
-<h4>Presets:
-{{#each Object.keys(presets) as name}}
-  <Preset name='{{name}}' on:select='usePreset(event.name)'/>
-{{/each}}
-</h4>
+  <h4>Presets:
+  {{#each Object.keys(presets) as name}}
+    <Preset name='{{name}}' on:select='usePreset(event.name)'/>
+  {{/each}}
+  </h4>
+{{else}}
+  <button on:click='init()'>Reset</button>
 {{/if}}
 {{#if error !== ''}}
   <div class='error'>
@@ -44,22 +47,8 @@
 
   export default {
     oncreate () {
-      const init = () => {
-        const slotCount = this.get('slotCount') * 1;
-        const colourCount = this.get('colourCount') * 1;
-        if (slotCount === 0 || colourCount === 0) { return; }
-        try {
-          AI.init(slotCount, colourCount);
-        } catch (e) {
-          this.set({error: e});
-          return; // keep running, but don't reset
-        }
-        guesses = [];
-        guesses.push([new Array(slotCount).fill(0)]);
-        this.set({guesses, slotCount, colourCount, error: ''});
-      };
-      this.colourObserver = this.observe( 'colourCount', init, {init:false}); // avoid double init on startup
-      this.slotObserver = this.observe( 'slotCount', init);
+      this.colourObserver = this.observe( 'colourCount', this.init, {init:false}); // avoid double init on startup
+      this.slotObserver = this.observe( 'slotCount', this.init);
     },
     ondestroy () {
       this.colourObserver.cancel();
@@ -84,6 +73,27 @@
       renderGrade: grade => new Array(grade[0] + 1).join('✓') + new Array(grade[1] + 1).join('~') + new Array(grade[2] + 1).join('✗'),
     },
     methods: {
+      init() {
+        const slotCount = this.get('slotCount') * 1;
+        const colourCount = this.get('colourCount') * 1;
+        if (slotCount === 0 || colourCount === 0) { return; }
+        try {
+          AI.init(slotCount, colourCount);
+        } catch (e) {
+          this.set({error: e});
+          return; // keep running, but don't reset
+        }
+        guesses = [];
+        guesses.push([new Array(slotCount).fill(0)]);
+        this.set({guesses, slotCount, colourCount, error: ''});
+      },
+      usePreset(name) {
+        const preset = this.get('presets')[name];
+        this.set({
+          colourCount: preset[0],
+          slotCount: preset[1],
+        });
+      },
       grade() {
         let guesses = this.get('guesses');
         let newGuess = guesses[guesses.length - 1][0];
@@ -94,13 +104,6 @@
         let guesses = this.get('guesses');
         guesses[guesses.length - 1][0][slot] = colourNumber;
         this.set({guesses});
-      },
-      usePreset(name) {
-        const preset = this.get('presets')[name];
-        this.set({
-          colourCount: preset[0],
-          slotCount: preset[1],
-        });
       },
     },
     components: {
