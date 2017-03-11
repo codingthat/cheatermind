@@ -6,7 +6,9 @@ That is, the computer AI will stay consistent with whatever it has already said 
 
 For a simplest example, pretend you're playing with one slot and two colours.  This is the equivalent of a coin toss.  Whatever you guess first will turn out not to be the right answer, because as soon as you guess it, the AI will cheat and pretend that the other one was the correct answer all along.  So it will always take you two guesses.
 
-The question is, how well can you do, given that you're cursed with such bad luck?
+**The question is, how well can you do, given that you're cursed with such bad luck?**
+
+Surely better than what you get with the auto-guess feature... :-)
 
 ## playing
 
