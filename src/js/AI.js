@@ -65,7 +65,8 @@ const diff = (guess, code) => {
   // last index: how many were just plain wrong
 };
 const guess = (newGuess) => {
-  if (possibleCodes.length === 1) { // possible win!
+  const startingPossibilityCount = possibleCodes.length;
+  if (startingPossibilityCount === 1) { // possible win!
     return {
       grade: diff(newGuess, possibleCodes[0]),
       possibilities: 1,
@@ -100,7 +101,8 @@ const guess = (newGuess) => {
   return {
     grade: gradeBuckets[chosenTie][0].split(',').map(i => i * 1),
     hint: possibleCodes[0],
-    possibilities: possibleCodes.length,
+    startingPossibilityCount,
+    endingPossibilityCount: possibleCodes.length,
   };
 };
 

@@ -12,11 +12,15 @@
     Presets:
     {{#each Object.keys(presets) as name}}
       <Preset name='{{name}}' on:select='usePreset(event.name)'/>
-    {{/each}}
+    {{/each}}<br/>
   </div>
 {{else}}
-  <button on:click='init()'>Reset</button>
+  <button on:click='init()'>Reset</button><br clear='all'/>
 {{/if}}
+<hr/>
+<input type='checkbox' bind:checked='options.showRemaining.setting'/>
+<span on:click='toggle("showRemaining")'>{{options['showRemaining'].text}}</span>
+<br/>
 {{#if error !== ''}}
   <div class='error'>
     {{error}}
@@ -31,7 +35,7 @@
           <Slot colourNumber='{{slot}}'/>
         {{/each}}
         <span class='arrow'>&rarr;</span>
-        <span class='grade'>{{ renderGrade(guess[1]) }}</span>
+        <span class='grade'>{{ renderGrade(guess[1], options.showRemaining.setting) }}</span>
       {{elseif !won}}
         <hr/>
         {{#each guess[0] as slot}}
@@ -48,10 +52,11 @@
 </div>
 
 <script>
-  import Slot from './Slot.html';
-  import Preset from './Preset.html';
-  import PickerSlot from './PickerSlot.html';
   import AI from '../js/AI';
+  import PickerSlot from './PickerSlot.html';
+  import Preset from './Preset.html';
+  import Slot from './Slot.html';
+  // import Toggler from './Toggler.html';
 
   export default {
     oncreate () {
@@ -77,12 +82,18 @@
           'Colourful': [16, 5],
           'Yikes': [9, 7],
         },
+        options: {
+          showRemaining: { text: 'Show possibilities remaining', setting: false },
+        },
       }
     },
     helpers: {
-      renderGrade: grade => new Array(grade[0] + 1).join('✓')
-                          + new Array(grade[1] + 1).join('~')
-                          + new Array(grade[2] + 1).join('✗'),
+      renderGrade: (guessResult, showRemaining) =>
+          new Array(guessResult.grade[0] + 1).join('✓')
+        + new Array(guessResult.grade[1] + 1).join('~')
+        + new Array(guessResult.grade[2] + 1).join('✗')
+        + (showRemaining ? ` (${guessResult.startingPossibilityCount} →
+                              ${guessResult.endingPossibilityCount})` : ''),
     },
     methods: {
       init() {
@@ -115,17 +126,22 @@
         let guesses = this.get('guesses');
         const newGuess = guesses[guesses.length - 1][0];
         const guessResult = AI.guess(newGuess);
-        guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), guessResult.grade]);
+        guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), guessResult]);
         this.set({guesses});
         if (guessResult.grade[0] === this.get('slotCount')) { // all checkmarks = player won!
           this.set({won: true});
         }
       },
+      toggle(dataKey) {
+        const options = this.get('options');
+        options[dataKey].setting = !options[dataKey].setting;
+        this.set({options});
+      },
     },
     components: {
-      Slot,
       PickerSlot,
       Preset,
+      Slot,
     }
   };
 </script>
@@ -140,11 +156,21 @@
   .gradebutton {
     width: 40px;
     height: 40px;
+    font-size: 20px;
   }
   .arrow {
     vertical-align: middle;
   }
   .grade {
     vertical-align: sub;
+  }
+  input[type=checkbox] {
+    width: 20px;
+    height: 20px;
+  }
+  input[type=checkbox] + span:hover {
+    color: blue;
+    cursor: pointer;
+    user-select: none;
   }
 </style>
