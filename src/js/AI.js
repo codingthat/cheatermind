@@ -64,12 +64,13 @@ const diff = (guess, code) => {
   return [exactCount, inexactCount, slotCount - exactCount - inexactCount];
   // last index: how many were just plain wrong
 };
-const guess = (newGuess) => {
+const guess = (newGuess, narrowDownPossibilities = true) => {
   const startingPossibilityCount = possibleCodes.length;
   if (startingPossibilityCount === 1) { // possible win!
     return {
       grade: diff(newGuess, possibleCodes[0]),
-      possibilities: 1,
+      startingPossibilityCount,
+      endingPossibilityCount: 1,
     };
   }
   const gradeBuckets = []; // whichever is largest, that's the official grade
@@ -97,13 +98,26 @@ const guess = (newGuess) => {
     // console.log('tiebreaker among', pastLastTie); // I haven't seen these yet in the wild.
     chosenTie = Math.floor(Math.random() * pastLastTie); // exclusive of pastLastTie as an integer
   } // otherwise index 0 is the only one, and that's the default 'chosen tie'
-  possibleCodes = gradeBuckets[chosenTie][1]; // narrow it down based on what we're about to return
+  if (narrowDownPossibilities) {
+    // narrow it down based on what we're about to return,
+    // but only if this is a real guess
+    possibleCodes = gradeBuckets[chosenTie][1];
+  }
   return {
     grade: gradeBuckets[chosenTie][0].split(',').map(i => i * 1),
-    hint: possibleCodes[0],
     startingPossibilityCount,
-    endingPossibilityCount: possibleCodes.length,
+    endingPossibilityCount: gradeBuckets[chosenTie][1].length,
   };
 };
+const hint = () => {
+  if (possibleCodes.length === 1) {
+    return possibleCodes[0];
+  }
+  const logicalIndex = possibleCodes.findIndex((code) => {
+    const guessResult = guess(code, false);
+    return guessResult.startingPossibilityCount > guessResult.endingPossibilityCount;
+  });
+  return possibleCodes[logicalIndex];
+};
 
-module.exports = { init, diff, guess }; // for ospec compatibility
+module.exports = { init, diff, guess, hint }; // for ospec compatibility

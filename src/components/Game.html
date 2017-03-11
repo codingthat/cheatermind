@@ -24,6 +24,12 @@
 <input type='checkbox' bind:checked='options.disallowDupes.setting'/>
 <span on:click='toggle("disallowDupes")'>{{options['disallowDupes'].text}}</span>
 <br/>
+<input type='checkbox' bind:checked='options.disallowIllogicalMoves.setting'/>
+<span on:click='toggle("disallowIllogicalMoves")'>{{options['disallowIllogicalMoves'].text}}</span>
+<br/>
+<input type='checkbox' bind:checked='options.autoHint.setting'/>
+<span on:click='toggle("autoHint")'>{{options['autoHint'].text}}</span>
+<br/>
 {{#if error !== ''}}
   <div class='error'>
     {{error}}
@@ -38,7 +44,12 @@
           <Slot colourNumber='{{slot}}'/>
         {{/each}}
         <span class='arrow'>&rarr;</span>
-        <span class='grade'>{{ renderGrade(guess[1], options.showRemaining.setting) }}</span>
+        <span class='grade'>{{ renderGrade(guess[1]) }}</span>
+        {{#if options.showRemaining.setting}}
+          <span class='{{ illogical(guess[1], slotCount) ? "illogical" : "" }}'>
+            {{ renderRemaining(guess[1]) }}
+          </span>
+        {{/if}}
       {{elseif !won}}
         <hr/>
         {{#each guess[0] as slot}}
@@ -59,6 +70,11 @@
   import PickerSlot from './PickerSlot.html';
   import Preset from './Preset.html';
   import Slot from './Slot.html';
+
+  const illogical = (guessResult, slotCount) =>
+    guessResult.endingPossibilityCount === guessResult.startingPossibilityCount
+    && guessResult.grade[0] !== slotCount;
+
 
   export default {
     oncreate () {
@@ -87,16 +103,20 @@
         options: {
           showRemaining: { text: 'Show possibilities remaining', setting: false },
           disallowDupes: { text: 'Disallow duplicate moves', setting: true },
+          disallowIllogicalMoves: { text: 'Disallow illogical moves', setting: true },
+          autoHint: { text: 'Automatically enter a logical guess next', setting: true },
         },
       }
     },
     helpers: {
-      renderGrade: (guessResult, showRemaining) =>
+      renderGrade: guessResult =>
           new Array(guessResult.grade[0] + 1).join('✓')
         + new Array(guessResult.grade[1] + 1).join('~')
-        + new Array(guessResult.grade[2] + 1).join('✗')
-        + (showRemaining ? ` (${guessResult.startingPossibilityCount} →
-                              ${guessResult.endingPossibilityCount})` : ''),
+        + new Array(guessResult.grade[2] + 1).join('✗'),
+      renderRemaining: guessResult =>
+        `(${guessResult.startingPossibilityCount} →
+          ${guessResult.endingPossibilityCount})`,
+      illogical,
     },
     methods: {
       init() {
@@ -111,7 +131,7 @@
         }
         guesses = [];
         guesses.push([new Array(slotCount).fill(0)]);
-        this.set({guesses, slotCount, colourCount, error: ''});
+        this.set({guesses, slotCount, colourCount, error: '', won: false});
       },
       usePreset(name) {
         const preset = this.get('presets')[name];
@@ -126,13 +146,21 @@
         this.set({guesses});
       },
       gradeNewGuess() {
+        const options = this.get('options');
         let guesses = this.get('guesses');
         const newGuess = guesses[guesses.length - 1][0];
-        const guessResult = AI.guess(newGuess);
-        const options = this.get('options');
-        if (options.disallowDupes.setting &&
-            guessResult.endingPossibilityCount === guessResult.startingPossibilityCount) {
-          this.set({error: 'Duplicate move not allowed'});
+        if (options.disallowDupes.setting && guesses.length > 1) {
+          const sameGuess = guesses.findIndex(
+            guess => JSON.stringify(guess[0]) === JSON.stringify(newGuess) );
+          if (sameGuess < guesses.length - 1) {
+            this.set({error: `You already guessed this in guess #${sameGuess + 1}`});
+            return;
+          }
+        }
+        const guessResult = AI.guess(newGuess); // it's OK to mutate, nothing changes
+        if (options.disallowIllogicalMoves.setting
+          && illogical(guessResult, this.get('slotCount'))) { 
+          this.set({error: 'Illogical move not allowed'});
           return;
         }
         this.set({error: ''});
@@ -140,6 +168,11 @@
         this.set({guesses});
         if (guessResult.grade[0] === this.get('slotCount')) { // all checkmarks = player won!
           this.set({won: true});
+        } else if (options.autoHint.setting) {
+          const hint = AI.hint();
+          hint.forEach((colour, slot) => {
+            this.updateNewGuess(slot, colour);
+          });
         }
       },
       toggle(dataKey) {
@@ -182,5 +215,8 @@
     color: blue;
     cursor: pointer;
     user-select: none;
+  }
+  .illogical {
+    color: red;
   }
 </style>
