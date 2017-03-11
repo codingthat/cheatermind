@@ -1,10 +1,5 @@
 <h2>CheaterMind</h2>
 <h3>(MasterMind <a href="https://github.com/IBwWG/cheatermind">with terrible luck</a>)</h3>
-{{#if won}}
-  <span class='won'>
-    Congratulations, you <i>finally</i> won!
-  </span>
-{{/if}}
 {{#if guesses.length === 1}}
   <div> 
     Possible colours: <input type='number' min='2' max='16' bind:value='colourCount'/><br/>
@@ -64,6 +59,11 @@
     </div>
   {{/each}}
 </div>
+{{#if won}}
+  <span class='won'>
+    Congratulations, you <i>finally</i> won!
+  </span>
+{{/if}}
 
 <script>
   import AI from '../js/AI';
