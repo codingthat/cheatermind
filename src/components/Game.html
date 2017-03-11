@@ -30,9 +30,9 @@
         {{#each guess[0] as slot}}
           <Slot colourNumber='{{slot}}'/>
         {{/each}}
-        <button class='gradebutton' on:click='grade()'>&rarr;</button><br/>
+        <button class='gradebutton' on:click='gradeNewGuess()'>&rarr;</button><br/>
         {{#each guess[0] as slot, i}}
-          <PickerSlot on:select='updateGuess(i, event.colourNumber)' colourCount='{{colourCount}}'/>
+          <PickerSlot on:select='updateNewGuess(i, event.colourNumber)' colourCount='{{colourCount}}'/>
         {{/each}}
       {{/if}}
     </div>
@@ -94,15 +94,15 @@
           slotCount: preset[1],
         });
       },
-      grade() {
+      updateNewGuess(slot, colourNumber) {
+        let guesses = this.get('guesses');
+        guesses[guesses.length - 1][0][slot] = colourNumber;
+        this.set({guesses});
+      },
+      gradeNewGuess() {
         let guesses = this.get('guesses');
         let newGuess = guesses[guesses.length - 1][0];
         guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), AI.guess(newGuess)]);
-        this.set({guesses});
-      },
-      updateGuess(slot, colourNumber) {
-        let guesses = this.get('guesses');
-        guesses[guesses.length - 1][0][slot] = colourNumber;
         this.set({guesses});
       },
     },
