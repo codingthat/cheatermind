@@ -33,7 +33,8 @@ o.spec("guess", function() { // WARNING: guess mutates AI.possibleCodes (for eff
         o(a.guess([1,2,4,4,0,1,6]).grade).deepEquals([7, 0, 0]);
     })
     o("tiny test", function() {
-        a.init(1, 1);
+        a.init(1, 2);
+        o(a.guess([1]).grade).deepEquals([0, 0, 1]);
         o(a.guess([0]).grade).deepEquals([1, 0, 0]);
     })
     o("tiny test 2", function() {

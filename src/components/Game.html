@@ -120,9 +120,10 @@
     },
     methods: {
       init() {
-        const slotCount = this.get('slotCount') * 1;
-        const colourCount = this.get('colourCount') * 1;
-        if (slotCount === 0 || colourCount === 0) { return; }
+        let slotCount = this.get('slotCount') * 1;
+        let colourCount = this.get('colourCount') * 1;
+        if (slotCount < 1) { slotCount = 1; }
+        if (colourCount < 2) { colourCount = 2; }
         try {
           AI.init(slotCount, colourCount);
         } catch (e) {

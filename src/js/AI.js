@@ -3,8 +3,8 @@ let slotCount = 4;
 let colourCount = 6;
 
 const init = (slots, colours) => {
-  if (slots <= 0) { throw new Error('Must have positive slots'); }
-  if (colours <= 0) { throw new Error('Must have positive colours'); }
+  if (slots < 1) { throw new Error('Must have at least 1 slot'); }
+  if (colours < 2) { throw new Error('Must have at least 2 colours'); }
 
   const possibilities = Math.pow(colours, slots); // eslint-disable-line no-restricted-properties
   if (possibilities > 9000000) {
