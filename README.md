@@ -10,8 +10,19 @@ The question is, how well can you do, given that you're cursed with such bad luc
 
 ## playing
 
+First, if you do not have yarn installed:
+
 ```sh
-npm build
+npm install --global yarn
+```
+
+With yarn installed:
+
+```sh
+git clone https://github.com/IBwWG/cheatermind
+cd cheatermind
+yarn
+npm run build
 ```
 
 Then launch public/index.html in your browser.  The clickable dots set your current guess, and the arrow makes your current guess official, and grades it for you.
