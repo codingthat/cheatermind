@@ -21,6 +21,9 @@
 <input type='checkbox' bind:checked='options.showRemaining.setting'/>
 <span on:click='toggle("showRemaining")'>{{options['showRemaining'].text}}</span>
 <br/>
+<input type='checkbox' bind:checked='options.disallowDupes.setting'/>
+<span on:click='toggle("disallowDupes")'>{{options['disallowDupes'].text}}</span>
+<br/>
 {{#if error !== ''}}
   <div class='error'>
     {{error}}
@@ -56,7 +59,6 @@
   import PickerSlot from './PickerSlot.html';
   import Preset from './Preset.html';
   import Slot from './Slot.html';
-  // import Toggler from './Toggler.html';
 
   export default {
     oncreate () {
@@ -84,6 +86,7 @@
         },
         options: {
           showRemaining: { text: 'Show possibilities remaining', setting: false },
+          disallowDupes: { text: 'Disallow duplicate moves', setting: true },
         },
       }
     },
@@ -126,6 +129,13 @@
         let guesses = this.get('guesses');
         const newGuess = guesses[guesses.length - 1][0];
         const guessResult = AI.guess(newGuess);
+        const options = this.get('options');
+        if (options.disallowDupes.setting &&
+            guessResult.endingPossibilityCount === guessResult.startingPossibilityCount) {
+          this.set({error: 'Duplicate move not allowed'});
+          return;
+        }
+        this.set({error: ''});
         guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), guessResult]);
         this.set({guesses});
         if (guessResult.grade[0] === this.get('slotCount')) { // all checkmarks = player won!
