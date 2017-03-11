@@ -2,11 +2,11 @@
 
 MasterMind clone where you are never lucky.
 
-That is, the computer AI will stay consistent with whatever it has already said about your guesses, but cheat by not deciding on the final code until it has no other choice.
+That is, the computer AI will stay consistent with whatever it has already said about your guesses, but it will cheat by not deciding on the final code until it has no other choice.
 
-For a simplest example, pretend you're playing with one slot and two colours.  This is the equivalent of a coin toss.  Whatever you guess first will turn out not to be the right answer, because as soon as you guess it, the AI will cheat and make it the other one.  So it will always take you two guesses.
+For a simplest example, pretend you're playing with one slot and two colours.  This is the equivalent of a coin toss.  Whatever you guess first will turn out not to be the right answer, because as soon as you guess it, the AI will cheat and pretend that the other one was the correct answer all along.  So it will always take you two guesses.
 
-The question is, how well can you do, given that you're cursed with such bad luck?  What's the minimum worst case scenario?
+The question is, how well can you do, given that you're cursed with such bad luck?
 
 ## playing
 
@@ -32,3 +32,9 @@ Then launch public/index.html in your browser.  The clickable dots set your curr
 ```sh
 npm test
 ```
+
+## questions of interest
+
+1. What's the minimum number of moves for a given slot + colour configuration in this worst-case scenario?
+1. Is it possible to come up with a formula for this?
+1. How can the AI be made more memory-efficient, so as to scale better?
