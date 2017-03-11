@@ -114,10 +114,10 @@
       gradeNewGuess() {
         let guesses = this.get('guesses');
         const newGuess = guesses[guesses.length - 1][0];
-        const grade = AI.guess(newGuess);
-        guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), grade]);
+        const guessResult = AI.guess(newGuess);
+        guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), guessResult.grade]);
         this.set({guesses});
-        if (grade[0] === this.get('slotCount')) { // all checkmarks = player won!
+        if (guessResult.grade[0] === this.get('slotCount')) { // all checkmarks = player won!
           this.set({won: true});
         }
       },

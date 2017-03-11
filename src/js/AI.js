@@ -65,7 +65,12 @@ const diff = (guess, code) => {
   // last index: how many were just plain wrong
 };
 const guess = (newGuess) => {
-  if (possibleCodes.length === 1) { return diff(newGuess, possibleCodes[0]); } // possible win!
+  if (possibleCodes.length === 1) { // possible win!
+    return {
+      grade: diff(newGuess, possibleCodes[0]),
+      possibilities: 1,
+    };
+  }
   const gradeBuckets = []; // whichever is largest, that's the official grade
   // (if there's a tie for largest bucket, take a random one to break it)
   const gradeBucketMap = {}; // just for quicker lookup during array filling
@@ -92,8 +97,11 @@ const guess = (newGuess) => {
     chosenTie = Math.floor(Math.random() * pastLastTie); // exclusive of pastLastTie as an integer
   } // otherwise index 0 is the only one, and that's the default 'chosen tie'
   possibleCodes = gradeBuckets[chosenTie][1]; // narrow it down based on what we're about to return
-    // console.log(possibleCodes[0], possibleCodes.length)
-  return gradeBuckets[chosenTie][0].split(',').map(i => i * 1);
+  return {
+    grade: gradeBuckets[chosenTie][0].split(',').map(i => i * 1),
+    hint: possibleCodes[0],
+    possibilities: possibleCodes.length,
+  };
 };
 
 module.exports = { init, diff, guess }; // for ospec compatibility
