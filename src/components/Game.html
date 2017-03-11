@@ -1,5 +1,10 @@
 <h2>CheaterMind</h2>
 <h3>(MasterMind <a href="https://github.com/IBwWG/cheatermind">with terrible luck</a>)</h3>
+{{#if won}}
+  <span class='won'>
+    Congratulations, you <i>finally</i> won!
+  </span>
+{{/if}}
 {{#if guesses.length === 1}}
   <h4>...with <input type='number' min='2' max='16' bind:value='colourCount'/> possible colours in each of <input type='number' min='1' max='23' bind:value='slotCount'/> slots...</h4>
   <h4>Presets:
@@ -25,7 +30,7 @@
         {{/each}}
         <span class='arrow'>&rarr;</span>
         <span class='grade'>{{ renderGrade(guess[1]) }}</span>
-      {{else}}
+      {{elseif !won}}
         <hr/>
         {{#each guess[0] as slot}}
           <Slot colourNumber='{{slot}}'/>
@@ -60,6 +65,7 @@
         slotCount: 4,
         guesses: [],
         error: '',
+        won: false,
         presets: {
           'Classic': [6, 4],
           'Simple': [3, 3],
@@ -101,9 +107,13 @@
       },
       gradeNewGuess() {
         let guesses = this.get('guesses');
-        let newGuess = guesses[guesses.length - 1][0];
-        guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), AI.guess(newGuess)]);
+        const newGuess = guesses[guesses.length - 1][0];
+        const grade = AI.guess(newGuess);
+        guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), grade]);
         this.set({guesses});
+        if (grade[0] === this.get('slotCount')) { // all checkmarks = player won!
+          this.set({won: true});
+        }
       },
     },
     components: {
@@ -117,6 +127,9 @@
 <style>
   .error {
     border: 2px dotted red;
+  }
+  .won {
+    border: 5px dotted lime;
   }
   .gradebutton {
     width: 40px;
