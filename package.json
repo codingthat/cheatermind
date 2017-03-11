@@ -1,6 +1,6 @@
 {
   "name": "cheatermind",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "MasterMind clone where the computer delays choosing the code as long as possible, while still leaving all previously given data true.",
   "main": "index.js",
   "scripts": {
