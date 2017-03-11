@@ -4,6 +4,10 @@
     "document": true
   },
   "rules": {
+    "no-plusplus": [
+      "error", {
+        "allowForLoopAfterthoughts": true
+      }],
     "no-console": 0,
     "import/no-extraneous-dependencies": [
       "error", {
