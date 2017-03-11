@@ -6,8 +6,10 @@ const init = (slots, colours) => {
   if (slots <= 0) { throw new Error('Must have positive slots'); }
   if (colours <= 0) { throw new Error('Must have positive colours'); }
 
-  const possibilities = colours ** slots;
-  if (possibilities > 11000000) { throw new Error('Might have too many possibilities for this engine'); }
+  const possibilities = Math.pow(colours, slots); // eslint-disable-line no-restricted-properties
+  if (possibilities > 11000000) {
+    throw new Error('Might have too many possibilities for this engine');
+  }
 
   slotCount = slots;
   colourCount = colours;
@@ -32,7 +34,10 @@ const init = (slots, colours) => {
   }
 };
 const diff = (guess, code) => {
-  if (guess.length !== slotCount) { throw new Error(`Guess and code must be the same length, but weren't: ${guess.length} !== ${slotCount}`); }
+  if (guess.length !== slotCount) {
+    throw new Error(`Guess and code must be the same length, but weren't:
+      ${guess.length} !== ${slotCount}`);
+  }
 
   let exactCount = 0;
   let inexactCount = 0;
@@ -92,6 +97,6 @@ const guess = (newGuess) => {
 };
 
 // module.exports works for ospec, but makes rollup produce an invalid bundle (client-side error)
-// module.exports = { init, diff, guess };
+module.exports = { init, diff, guess };
 // export makes a valid bundle, but chokes ospec
-export { init, diff, guess };
+// export { init, diff, guess };

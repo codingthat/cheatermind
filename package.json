@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
+    "build:test": "npm test && rollup -c",
     "build:watch": "npm run build -- -w",
-    "clean": "npm run clean:dist && rimraf node_modules",
-    "clean:dist": "rimraf dist",
     "lint": "eslint ./src/**",
     "test": "ospec"
   },
@@ -40,6 +39,7 @@
     "rimraf": "^2.5.4",
     "rollup": "^0.36.4",
     "rollup-plugin-babel": "^2.6.1",
+    "rollup-plugin-commonjs": "^8.0.0",
     "rollup-plugin-eslint": "^3.0.0",
     "rollup-plugin-svelte": "^1.0.0",
     "rollup-watch": "^2.5.0",

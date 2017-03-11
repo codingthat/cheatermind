@@ -1,6 +1,7 @@
 import babel from 'rollup-plugin-babel';
 import eslint from 'rollup-plugin-eslint';
 import svelte from 'rollup-plugin-svelte';
+import commonjs from 'rollup-plugin-commonjs';
 
 export default {
   entry: 'src/main.js',
@@ -11,6 +12,9 @@ export default {
       include: [
         './src/**/*.js',
       ],
+    }),
+    commonjs({
+      include: 'src/js/AI.js',
     }),
     babel({
       include: ['./src/**/*.js'],
