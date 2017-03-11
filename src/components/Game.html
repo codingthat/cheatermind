@@ -6,12 +6,14 @@
   </span>
 {{/if}}
 {{#if guesses.length === 1}}
-  <h4>...with <input type='number' min='2' max='16' bind:value='colourCount'/> possible colours in each of <input type='number' min='1' max='23' bind:value='slotCount'/> slots...</h4>
-  <h4>Presets:
-  {{#each Object.keys(presets) as name}}
-    <Preset name='{{name}}' on:select='usePreset(event.name)'/>
-  {{/each}}
-  </h4>
+  <div> 
+    Possible colours: <input type='number' min='2' max='16' bind:value='colourCount'/><br/>
+    Slots: <input type='number' min='1' max='23' bind:value='slotCount'/><br/>
+    Presets:
+    {{#each Object.keys(presets) as name}}
+      <Preset name='{{name}}' on:select='usePreset(event.name)'/>
+    {{/each}}
+  </div>
 {{else}}
   <button on:click='init()'>Reset</button>
 {{/if}}
@@ -37,7 +39,8 @@
         {{/each}}
         <button class='gradebutton' on:click='gradeNewGuess()'>&rarr;</button><br/>
         {{#each guess[0] as slot, i}}
-          <PickerSlot on:select='updateNewGuess(i, event.colourNumber)' colourCount='{{colourCount}}'/>
+          <PickerSlot on:select='updateNewGuess(i, event.colourNumber)'
+                      colourCount='{{colourCount}}'/>
         {{/each}}
       {{/if}}
     </div>
@@ -52,7 +55,8 @@
 
   export default {
     oncreate () {
-      this.colourObserver = this.observe( 'colourCount', this.init, {init:false}); // avoid double init on startup
+      this.colourObserver = this.observe( 'colourCount', this.init,
+        { init:false }); // avoid double init on startup
       this.slotObserver = this.observe( 'slotCount', this.init);
     },
     ondestroy () {
@@ -76,7 +80,9 @@
       }
     },
     helpers: {
-      renderGrade: grade => new Array(grade[0] + 1).join('✓') + new Array(grade[1] + 1).join('~') + new Array(grade[2] + 1).join('✗'),
+      renderGrade: grade => new Array(grade[0] + 1).join('✓')
+                          + new Array(grade[1] + 1).join('~')
+                          + new Array(grade[2] + 1).join('✗'),
     },
     methods: {
       init() {
