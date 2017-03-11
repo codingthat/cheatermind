@@ -1,6 +1,11 @@
 <h1>CheaterMind</h1>
 {{#if guesses.length === 1}}
   <h4>...with <input type='number' min='2' max='16' bind:value='colourCount'/> possible colours in each of <input type='number' min='1' max='23' bind:value='slotCount'/> slots...</h4>
+<h4>Presets:
+{{#each Object.keys(presets) as name}}
+  <Preset name='{{name}}' on:select='usePreset(event.name)'/>
+{{/each}}
+</h4>
 {{/if}}
 {{#if error !== ''}}
   <div class='error'>
@@ -15,14 +20,14 @@
         {{#each guess[0] as slot}}
           <Slot colourNumber='{{slot}}'/>
         {{/each}}
-        &rarr;
-        {{ renderGrade(guess[1]) }}
+        <span class='arrow'>&rarr;</span>
+        <span class='grade'>{{ renderGrade(guess[1]) }}</span>
       {{else}}
         <hr/>
         {{#each guess[0] as slot}}
-          <Slot next='next' colourNumber='{{slot}}'/>
+          <Slot colourNumber='{{slot}}'/>
         {{/each}}
-        <button class='grade' on:click='grade()'>&rarr;</button><br/>
+        <button class='gradebutton' on:click='grade()'>&rarr;</button><br/>
         {{#each guess[0] as slot, i}}
           <PickerSlot on:select='updateGuess(i, event.colourNumber)' colourCount='{{colourCount}}'/>
         {{/each}}
@@ -33,6 +38,7 @@
 
 <script>
   import Slot from './Slot.html';
+  import Preset from './Preset.html';
   import PickerSlot from './PickerSlot.html';
   import AI from '../js/AI';
 
@@ -65,6 +71,13 @@
         slotCount: 4,
         guesses: [],
         error: '',
+        presets: {
+          'Classic': [6, 4],
+          'Simple': [3, 3],
+          'Coin Toss': [2, 1],
+          'Colourful': [16, 5],
+          'Yikes': [9, 7],
+        },
       }
     },
     helpers: {
@@ -81,11 +94,19 @@
         let guesses = this.get('guesses');
         guesses[guesses.length - 1][0][slot] = colourNumber;
         this.set({guesses});
-      }
+      },
+      usePreset(name) {
+        const preset = this.get('presets')[name];
+        this.set({
+          colourCount: preset[0],
+          slotCount: preset[1],
+        });
+      },
     },
     components: {
       Slot,
       PickerSlot,
+      Preset,
     }
   };
 </script>
@@ -94,8 +115,14 @@
   .error {
     border: 2px dotted red;
   }
-  .grade {
+  .gradebutton {
     width: 40px;
     height: 40px;
+  }
+  .arrow {
+    vertical-align: middle;
+  }
+  .grade {
+    vertical-align: sub;
   }
 </style>
