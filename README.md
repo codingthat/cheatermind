@@ -38,3 +38,4 @@ npm test
 1. What's the minimum number of moves for a given slot + colour configuration in this worst-case scenario?
 1. Is it possible to come up with a formula for this?
 1. How can the AI be made more memory-efficient, so as to scale better?
+1. Is the tiebreaker case in the current AI implementation ever possible?  I.e., does there exist a scenario in which the AI would have more than one equally "most unlucky" grade to give the player?

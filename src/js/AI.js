@@ -88,7 +88,7 @@ const guess = (newGuess) => {
   }
   let chosenTie = 0;
   if (pastLastTie > 1) { // pick randomly among all the ties for biggest bucket
-    console.log('tiebreaker among', pastLastTie);
+    // console.log('tiebreaker among', pastLastTie); // I haven't seen these yet in the wild.
     chosenTie = Math.floor(Math.random() * pastLastTie); // exclusive of pastLastTie as an integer
   } // otherwise index 0 is the only one, and that's the default 'chosen tie'
   possibleCodes = gradeBuckets[chosenTie][1]; // narrow it down based on what we're about to return
