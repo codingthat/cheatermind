@@ -109,7 +109,7 @@ const guess = (newGuess, narrowDownPossibilities = true) => {
     endingPossibilityCount: gradeBuckets[chosenTie][1].length,
   };
 };
-const hint = () => {
+const hint = () => { // a logical guess, but not the most efficient
   if (possibleCodes.length === 1) {
     return possibleCodes[0];
   }
@@ -119,5 +119,28 @@ const hint = () => {
   });
   return possibleCodes[logicalIndex];
 };
+const bestGuess = () => {
+  if (possibleCodes.length === 1) {
+    return possibleCodes[0];
+  }
+  let bestEndingCount = Infinity;
+  let bestEndingIndex = -1;
+  const value = (code) => {
+    let sum = 0;
+    for (let i = 0; i < slotCount; i++) {
+      sum += code[i] * Math.pow(colourCount, slotCount - i - 1);
+    }
+    return sum;
+  };
+  for (let i = 0; i < possibleCodes.length; i++) {
+    const guessResult = guess(possibleCodes[i], false);
+    if (guessResult.endingPossibilityCount <= bestEndingCount) {
+      if (guessResult.endingPossibilityCount === bestEndingCount && value(possibleCodes[i]) > value(possibleCodes[bestEndingIndex])) continue;
+      bestEndingCount = guessResult.endingPossibilityCount;
+      bestEndingIndex = i;
+    }
+  }
+  return possibleCodes[bestEndingIndex];
+};
 
-module.exports = { init, diff, guess, hint }; // for ospec compatibility
+module.exports = { init, diff, guess, hint, bestGuess }; // for ospec compatibility
