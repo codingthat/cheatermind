@@ -128,6 +128,7 @@ const bestGuess = () => {
   const value = (code) => {
     let sum = 0;
     for (let i = 0; i < slotCount; i++) {
+      // eslint-disable-next-line no-restricted-properties
       sum += code[i] * Math.pow(colourCount, slotCount - i - 1);
     }
     return sum;
@@ -135,7 +136,10 @@ const bestGuess = () => {
   for (let i = 0; i < possibleCodes.length; i++) {
     const guessResult = guess(possibleCodes[i], false);
     if (guessResult.endingPossibilityCount <= bestEndingCount) {
-      if (guessResult.endingPossibilityCount === bestEndingCount && value(possibleCodes[i]) > value(possibleCodes[bestEndingIndex])) continue;
+      if (guessResult.endingPossibilityCount === bestEndingCount
+         && value(possibleCodes[i]) > value(possibleCodes[bestEndingIndex])) {
+        continue; // eslint-disable-line no-continue
+      }
       bestEndingCount = guessResult.endingPossibilityCount;
       bestEndingIndex = i;
     }
