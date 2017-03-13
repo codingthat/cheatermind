@@ -110,7 +110,7 @@
           disallowIllogicalMoves: { text: 'Disallow illogical moves', setting: false },
           autoHint: { text: 'Automatically enter a logical guess next...', setting: false,
             trigger: 'doHint' },
-          bestHint: { text: '...and use the best one possible', setting: false,
+          bestHint: { text: '...and use the best one possible (may crash on large slot+colour combos)', setting: false,
             trigger: 'doHint' },
         },
         playerModifiedNextGuess: false,
@@ -141,6 +141,7 @@
         guesses = [];
         guesses.push([new Array(slotCount).fill(0)]);
         this.set({guesses, slotCount, colourCount, error: '', won: false});
+        this.doHint();
       },
       usePreset(name) {
         const preset = this.get('presets')[name];
