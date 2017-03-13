@@ -25,6 +25,11 @@
 <input type='checkbox' bind:checked='options.autoHint.setting'/>
 <span on:click='toggle("autoHint")'>{{options['autoHint'].text}}</span>
 <br/>
+<span class='{{options.autoHint.setting?"":"hidden"}}'>
+  <input type='checkbox' bind:checked='options.bestHint.setting'/>
+  <span on:click='toggle("bestHint")'>{{options['bestHint'].text}}</span>
+</span>
+<br/>
 {{#if error !== ''}}
   <div class='error'>
     {{error}}
@@ -75,7 +80,6 @@
     guessResult.endingPossibilityCount === guessResult.startingPossibilityCount
     && guessResult.grade[0] !== slotCount;
 
-
   export default {
     oncreate () {
       this.colourObserver = this.observe( 'colourCount', this.init,
@@ -104,8 +108,12 @@
           showRemaining: { text: 'Show possibilities remaining', setting: false },
           disallowDupes: { text: 'Disallow duplicate moves', setting: true },
           disallowIllogicalMoves: { text: 'Disallow illogical moves', setting: false },
-          autoHint: { text: 'Automatically enter a logical guess next', setting: false },
+          autoHint: { text: 'Automatically enter a logical guess next...', setting: false,
+            trigger: 'doHint' },
+          bestHint: { text: '...and use the best one possible', setting: false,
+            trigger: 'doHint' },
         },
+        playerModifiedNextGuess: false,
       }
     },
     helpers: {
@@ -141,10 +149,11 @@
           slotCount: preset[1],
         });
       },
-      updateNewGuess(slot, colourNumber) {
+      updateNewGuess(slot, colourNumber, fromPlayer = true) {
         let guesses = this.get('guesses');
         guesses[guesses.length - 1][0][slot] = colourNumber;
         this.set({guesses});
+        this.set({playerModifiedNextGuess: fromPlayer});
       },
       gradeNewGuess() {
         const options = this.get('options');
@@ -167,13 +176,11 @@
         this.set({error: ''});
         guesses.splice(guesses.length - 1, 0, [newGuess.slice(0), guessResult]);
         this.set({guesses});
+        this.set({playerModifiedNextGuess: false});
         if (guessResult.grade[0] === this.get('slotCount')) { // all checkmarks = player won!
           this.set({won: true});
-        } else if (options.autoHint.setting) {
-          const hint = AI.hint();
-          hint.forEach((colour, slot) => {
-            this.updateNewGuess(slot, colour);
-          });
+        } else {
+          this.doHint();
         }
         window.scrollTo(0, document.body.scrollHeight);
       },
@@ -181,6 +188,18 @@
         const options = this.get('options');
         options[dataKey].setting = !options[dataKey].setting;
         this.set({options});
+        if (options[dataKey].trigger) {
+          this[options[dataKey].trigger]();
+        }
+      },
+      doHint() { // only if option is on and guess hasn't been touched
+        if (this.get('playerModifiedNextGuess')) { return; }
+        const options = this.get('options');
+        if (!options.autoHint.setting) { return; }
+        const hint = options.bestHint.setting ? AI.bestGuess() : AI.hint();
+        hint.forEach((colour, slot) => {
+          this.updateNewGuess(slot, colour, false);
+        });
       },
     },
     components: {
@@ -217,6 +236,9 @@
     color: blue;
     cursor: pointer;
     user-select: none;
+  }
+  .hidden {
+    display: none;
   }
   .illogical {
     color: red;
