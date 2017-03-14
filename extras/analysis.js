@@ -3,6 +3,7 @@
 const IntegerPartition = require('./integer-partition');
 
 const startingCodes = (slots, colours) => {
+    // return [[0,0,1,1]]
     const codes = [];
     for (const part of IntegerPartition.zs1(slots)) {
         if (part.length > colours) { continue; }
@@ -43,4 +44,4 @@ for (let startingCode of startingCodes(slots, colours)) {
         bestCodes.push(startingCode);
     }
 }
-console.log(`For ${slots} slots and ${colours} colours, the min moves needed are ${bestMoves}, using starting code(s): ${JSON.stringify(bestCodes)}`);
+console.log(`\nFor ${slots} slots and ${colours} colours, the min moves needed are ${bestMoves}, using starting code(s):\n ${JSON.stringify(bestCodes)}`);

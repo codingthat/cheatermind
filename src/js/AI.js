@@ -1,3 +1,4 @@
+let allPossibleCodes = [];
 let possibleCodes = [];
 let slotCount = 4;
 let colourCount = 6;
@@ -32,6 +33,7 @@ const init = (slots, colours) => {
       currentCode[0] += 1;
     }
   }
+  allPossibleCodes = possibleCodes.slice(0);
 };
 const diff = (guess, code) => {
   if (guess.length !== slotCount) {
@@ -74,39 +76,43 @@ const guess = (newGuess, narrowDownPossibilities = true) => {
     };
   }
   const gradeBuckets = []; // whichever is largest, that's the official grade
-  // (if there's a tie for largest bucket, take a random one to break it)
-  const gradeBucketMap = {}; // just for quicker lookup during array filling
+  // (if there's a tie for largest bucket, use tiebreaker algorithm)
+  const gradeBucketMap = new Map(); // just for quicker lookup during array filling
   for (const code of possibleCodes) { // eslint-disable-line no-restricted-syntax
     const gradeForCode = diff(newGuess, code);
     if (gradeForCode[0] !== slotCount) { // i.e. code !== guess
-      const bucket = gradeForCode.join(',');
-      if (typeof (gradeBucketMap[bucket]) === 'undefined') {
-        gradeBuckets.push([bucket, []]);
-        gradeBucketMap[bucket] = gradeBuckets.length - 1; // the new 0
+      if (typeof (gradeBucketMap[gradeForCode]) === 'undefined') {
+        gradeBuckets.push([gradeForCode, []]);
+        gradeBucketMap[gradeForCode] = gradeBuckets.length - 1; // the new 0
       }
-      gradeBuckets[gradeBucketMap[bucket]][1].push(code);
+      gradeBuckets[gradeBucketMap[gradeForCode]][1].push(code);
     }
   }
   gradeBuckets.sort((a, b) => b[1].length - a[1].length);
-  const best = gradeBuckets[0][1];
+  const bestGrade = gradeBuckets[0][1].length;
   let pastLastTie = 1;
-  if (gradeBuckets.length > 1) {
-    while (gradeBuckets[pastLastTie][1] === best) { pastLastTie += 1; }
-  }
-  let chosenTie = 0;
-  if (pastLastTie > 1) { // pick randomly among all the ties for biggest bucket
-    // console.log('tiebreaker among', pastLastTie); // I haven't seen these yet in the wild.
-    chosenTie = Math.floor(Math.random() * pastLastTie); // exclusive of pastLastTie as an integer
+  while (gradeBuckets.length > pastLastTie
+    && gradeBuckets[pastLastTie][1].length === bestGrade) { pastLastTie += 1; }
+  let bestBucket = gradeBuckets[0]; // default, unless there's a tie
+  if (pastLastTie > 1) { // tie: prefer less white pegs, then more black pegs
+    let tieBuckets = gradeBuckets.slice(0, pastLastTie);
+    const base = slotCount + 1;
+    const value = grade => (base - grade[1]) * base + grade[0];
+    tieBuckets.sort((a, b) => value(b[0]) - value(a[0]));
+    bestBucket = tieBuckets[0];
+    // for (let bucket of tieBuckets) {
+    //   console.log(`${bucket[0]} would leave ${bucket[1].length} possibilities, ${value(bucket[0])}`)
+    // }
   } // otherwise index 0 is the only one, and that's the default 'chosen tie'
   if (narrowDownPossibilities) {
     // narrow it down based on what we're about to return,
     // but only if this is a real guess
-    possibleCodes = gradeBuckets[chosenTie][1];
+    possibleCodes = bestBucket[1];
   }
   return {
-    grade: gradeBuckets[chosenTie][0].split(',').map(i => i * 1),
+    grade: bestBucket[0],
     startingPossibilityCount,
-    endingPossibilityCount: gradeBuckets[chosenTie][1].length,
+    endingPossibilityCount: bestBucket[1].length,
   };
 };
 const hint = () => { // a logical guess, but not the most efficient
@@ -133,18 +139,31 @@ const bestGuess = () => {
     }
     return sum;
   };
-  for (let i = 0; i < possibleCodes.length; i++) {
-    const guessResult = guess(possibleCodes[i], false);
+  for (let i = 0; i < allPossibleCodes.length; i++) {
+    const guessResult = guess(allPossibleCodes[i], false);
+    // console.log(`code ${allPossibleCodes[i]}: ${guessResult.grade} ${guessResult.endingPossibilityCount}`);
     if (guessResult.endingPossibilityCount <= bestEndingCount) {
       if (guessResult.endingPossibilityCount === bestEndingCount
-         && value(possibleCodes[i]) > value(possibleCodes[bestEndingIndex])) {
+         && value(allPossibleCodes[i]) > value(allPossibleCodes[bestEndingIndex])) {
         continue; // eslint-disable-line no-continue
       }
       bestEndingCount = guessResult.endingPossibilityCount;
       bestEndingIndex = i;
+      // console.log(`new best code ${allPossibleCodes[i]}: ${bestEndingCount}`)
     }
   }
-  return possibleCodes[bestEndingIndex];
+  const ties = [];
+  for (let i = 0; i < allPossibleCodes.length; i++) {
+    const guessResult = guess(allPossibleCodes[i], false);
+    if (guessResult.endingPossibilityCount === bestEndingCount) {
+      ties.push(allPossibleCodes[i]);
+    }
+  }
+  ties.sort((a,b) => value(b) - value(a));
+  for (let i = 0; i < ties.length; i++) {
+    // console.log(`code ${ties[i]} ties for best count ${bestEndingCount}`)
+  }
+  return allPossibleCodes[bestEndingIndex];
 };
 
 module.exports = { init, diff, guess, hint, bestGuess }; // for ospec compatibility
