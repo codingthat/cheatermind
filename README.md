@@ -43,6 +43,6 @@ npm test
 
 ## questions of interest
 
-1. What's the minimum number of moves for a given slot + colour configuration in this worst-case scenario?  Does the current implementation always produce it?
+1. What's the minimum number of moves for a given slot + colour configuration in this worst-case scenario?  [Does the current implementation always produce it?](https://github.com/IBwWG/cheatermind/wiki/Analysis)
 1. [Is it possible to come up with a formula for this?](http://math.stackexchange.com/questions/2182321/the-best-worst-case-scenario-in-mastermind)
 1. How can the AI be made more memory-efficient, so as to scale better?
