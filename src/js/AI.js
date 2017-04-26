@@ -104,6 +104,16 @@ const guess = (newGuess, narrowDownPossibilities = true) => {
     //   console.log(`${bucket[0]} would leave ${bucket[1].length} possibilities, ${value(bucket[0])}`)
     // }
   } // otherwise index 0 is the only one, and that's the default 'chosen tie'
+  // if (JSON.stringify(bestBucket[0])==='[0,1,3]' && narrowDownPossibilities) {
+  //   for (let code of bestBucket[1]) {
+  //     let str = '';
+  //     for (let slot of code) {
+  //       str += (slot + 1);
+  //     }
+  //     console.log(str)
+  // }
+  // throw new Error();
+  // }
   if (narrowDownPossibilities) {
     // narrow it down based on what we're about to return,
     // but only if this is a real guess
