@@ -1,7 +1,8 @@
 "use strict"
 
-const IntegerPartition = require('./integer-partition');
+const ai = require("../src/js/AI");
 
+const IntegerPartition = require('./integer-partition');
 const startingCodes = (slots, colours) => {
     // return [[0,0,1,1]]
     const codes = [];
@@ -18,21 +19,62 @@ const startingCodes = (slots, colours) => {
     return codes;
 }
 
-var ai = require("../src/js/AI")
+const commandLineArgs = process.argv.slice(2);
+let displayDetail = false;
+let colourMin, colourMax, slotMin, slotMax;
+if (commandLineArgs.length < 2) {
+    console.log(`Use the following command line parameters:
 
-// let colours = 6;
-// let slots = 4;
-console.log('Get ready for a long, long running analysis.\n'); // which is currently incorrect
-const colourMax = 6;
-const slotMax = 4;
-let header = '\t';
-for (let slots = 2; slots <= slotMax; slots++) {
+        Required:
+
+        -sA,B   Where A and B are the min and max slots to use.
+        -cA,B   Where A and B are the min and max colours to use.
+
+        Optional:
+
+        -d      Display more detail for each game analysis.
+
+        If the ranges indicated cover only a single game:
+            1.  no summary is displayed
+            2.  -d is assumed
+    `);
+    return;
+} else {
+    commandLineArgs.forEach(function(element) {
+        const matches = element.match(/-(([sc])([0-9]+),([0-9]+)|d)/);
+        if (matches === null) {
+            console.log(`Not sure what you mean by "${element}"`);
+            return;
+        }
+        if (matches[1] === 'd') {
+            displayDetail = true;
+        } else if (matches[2] === 's') {
+            slotMin = matches[3] * 1;
+            slotMax = matches[4] * 1;
+        } else if (matches[2] === 'c') {
+            colourMin = matches[3] * 1;
+            colourMax = matches[4] * 1;     
+        }
+    }, this);
+    if (colourMin === colourMax && slotMin === slotMax) {
+        displayDetail = true;
+    }
+}
+
+let summary = '';
+let header = 'c \\ s\t';
+for (let slots = slotMin; slots <= slotMax; slots++) {
     header += slots + '\t';
 }
-console.log(header);
-for (let colours = 2; colours <= colourMax; colours++) {
+if (displayDetail) {
+    summary += header;
+} else {
+    console.log('Get ready for a potentially long, long running analysis.\n');
+    console.log(header);
+}
+for (let colours = colourMin; colours <= colourMax; colours++) {
     let line = colours + '\t';
-    for (let slots = 2; slots <= slotMax; slots++) {
+    for (let slots = slotMin; slots <= slotMax; slots++) {
         let bestCodes = [];
         let bestMoves = Infinity;
 
@@ -44,13 +86,17 @@ for (let colours = 2; colours <= colourMax; colours++) {
             }
             let result = ai.guess(startingCode);
             let moves = 1;
-            // console.log();
-            // console.log(moves, startingCode, result.grade, result.endingPossibilityCount);
+            if (displayDetail) {
+                console.log();
+                console.log(moves, startingCode, result.grade, result.endingPossibilityCount);
+            }
             while (result.grade[0] < slots && moves < 20) {
                 let code = ai.bestGuess();
                 result = ai.guess(code);
                 moves++;
-                // console.log(moves, code, result.grade, result.endingPossibilityCount);
+                if (displayDetail) {
+                    console.log(moves, code, result.grade, result.endingPossibilityCount);
+                }
             }
             if (moves < bestMoves) {
                 bestMoves = moves;
@@ -63,7 +109,16 @@ for (let colours = 2; colours <= colourMax; colours++) {
             bestMoves = '-';
         }
         line += bestMoves + '\t';
+        if (displayDetail) {
+            console.log(`\nFor ${slots} slots and ${colours} colours, the min moves needed are ${bestMoves}, using starting code(s):\n ${JSON.stringify(bestCodes)}`);
+        }
     }
-    console.log(line);
+    if (displayDetail) {
+        summary += line;
+    } else {
+        console.log(line);
+    }
 }
-// console.log(`\nFor ${slots} slots and ${colours} colours, the min moves needed are ${bestMoves}, using starting code(s):\n ${JSON.stringify(bestCodes)}`);
+if (!displayDetail) {
+    console.log(summary);
+}
