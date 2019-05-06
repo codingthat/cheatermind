@@ -1,4 +1,4 @@
-# cheatermind
+# Cheatermind
 
 MasterMind clone where you are never lucky.
 
@@ -10,11 +10,11 @@ For a simplest example, pretend you're playing with one slot and two colours.  T
 
 Compare your minimum with a play-through that uses the "best automatic guess" feature.  :-)
 
-## playing online
+## Playing Online
 
 You can play a live demo at: https://ibwwg.itch.io/cheatermind
 
-## playing locally
+## Playing Locally
 
 It's assumed you have Node, npm, and git installed.
 
@@ -35,13 +35,13 @@ npm run build
 
 Then launch public/index.html in your browser.  The clickable dots set your current guess, and the arrow makes your current guess official, and grades it for you.
 
-## tests
+## Tests
 
 ```sh
 npm test
 ```
 
-## questions of interest
+## Questions of Interest
 
 1. What's the minimum number of moves for a given slot + colour configuration in this worst-case scenario?  [Does the current implementation always produce it?](https://github.com/IBwWG/cheatermind/wiki/Analysis)
 1. [Is it possible to come up with a formula for this?](http://math.stackexchange.com/questions/2182321/the-best-worst-case-scenario-in-mastermind)
