@@ -1801,11 +1801,15 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
-svelte@^1.6.0, svelte@^1.9.0:
+svelte@^1.6.0:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/svelte/-/svelte-1.9.1.tgz#44245c8a4a8cd5a0b3aede71cbadca04c566406b"
   dependencies:
     magic-string "^0.19.0"
+
+svelte@^3.49.0:
+  version "3.49.0"
+  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.49.0.tgz#5baee3c672306de1070c3b7888fc2204e36a4029"
 
 table@^3.7.8:
   version "3.8.3"
